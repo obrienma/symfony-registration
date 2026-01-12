@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Breed;
+use App\Enum\PetTypeEnum;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,28 +17,21 @@ class BreedRepository extends ServiceEntityRepository
         parent::__construct($registry, Breed::class);
     }
 
-//    /**
-//     * @return Breed[] Returns an array of Breed objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('b')
-//            ->andWhere('b.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('b.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?Breed
-//    {
-//        return $this->createQueryBuilder('b')
-//            ->andWhere('b.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    /**
+     * Find breeds by name and pet type for search functionality
+     *
+     * @return Breed[] Returns an array of Breed objects
+     */
+    public function findByNameAndPetType(string $name, PetTypeEnum $petType): array
+    {
+        return $this->createQueryBuilder('b')
+            ->andWhere('LOWER(b.name) LIKE LOWER(:name)') // NOTE: not necessary for mysql, but database/collation agnostic
+            ->andWhere('b.petType = :petType')
+            ->setParameter('name', '%' . $name . '%')
+            ->setParameter('petType', $petType)
+            ->orderBy('b.name', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

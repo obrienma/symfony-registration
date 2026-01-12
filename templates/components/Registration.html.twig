@@ -28,61 +28,104 @@
             >
         </div>
 
-        <!-- Pet Type Field -->
+        <!-- Pet Type Field - Segmented Control -->
         <div class="mb-6">
             <label class="block text-sm font-medium text-gray-700 mb-3">
                 Pet Type
             </label>
-            <div class="flex gap-3">
-                <button
-                    type="button"
+            <div style="display: inline-flex; border: 1px solid #d1d5db; border-radius: 0.5rem; padding: 0.25rem; width: 100%;">
+                <input
+                    type="radio"
+                    id="petType-cat"
+                    name="petType"
+                    value="cat"
                     data-model="petType"
-                    data-model-value="cat"
-                    @click="petType = 'cat'"
-                    class="flex-1 py-2 px-4 rounded-lg font-medium transition-all {% if this.petType == 'cat' %}bg-blue-100 text-blue-600 border-2 border-blue-500{% else %}bg-gray-100 text-gray-600 border-2 border-gray-200{% endif %}"
+                    {% if this.petType == 'cat' %}checked{% endif %}
+                    style="display: none;"
+                    @change="$refresh"
                 >
+                <label for="petType-cat" style="flex: 1; padding: 0.5rem 1rem; border-radius: 0.375rem; font-weight: 500; text-align: center; cursor: pointer; transition: all 0.2s; {% if this.petType == 'cat' %}background-color: #2563eb; color: white;{% else %}background-color: transparent; color: #374151;{% endif %}">
                     Cat
-                </button>
-                <button
-                    type="button"
+                </label>
+                <input
+                    type="radio"
+                    id="petType-dog"
+                    name="petType"
+                    value="dog"
                     data-model="petType"
-                    data-model-value="dog"
-                    @click="petType = 'dog'"
-                    class="flex-1 py-2 px-4 rounded-lg font-medium transition-all {% if this.petType == 'dog' %}bg-blue-100 text-blue-600 border-2 border-blue-500{% else %}bg-gray-100 text-gray-600 border-2 border-gray-200{% endif %}"
+                    {% if this.petType == 'dog' %}checked{% endif %}
+                    style="display: none;"
+                    @change="$refresh"
                 >
+                <label for="petType-dog" style="flex: 1; padding: 0.5rem 1rem; border-radius: 0.375rem; font-weight: 500; text-align: center; cursor: pointer; transition: all 0.2s; {% if this.petType == 'dog' %}background-color: #2563eb; color: white;{% else %}background-color: transparent; color: #374151;{% endif %}">
                     Dog
-                </button>
+                </label>
             </div>
         </div>
 
-        <!-- Breed Field -->
+        <!-- Breed Field - Only visible when petType is selected -->
+        {% if this.petType %}
         <div class="mb-6">
-            <label for="breed" class="block text-sm font-medium text-gray-700 mb-2">
+            <label for="breedCombobox" class="block text-sm font-medium text-gray-700 mb-2">
                 What breed are they?
             </label>
+
+            <!-- Combobox Container -->
             <div class="relative">
                 <input
                     type="text"
-                    id="breed"
+                    id="breedCombobox"
+                    role="combobox"
+                    aria-autocomplete="list"
+                    aria-controls="breedListbox"
                     data-model="breed"
-                    placeholder="Can't find it?"
+                    placeholder="Search breeds..."
                     value="{{ this.breed }}"
+                    @input.debounce-300="$refresh"
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                 <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
                     🔍
                 </span>
+
+                <!-- Dropdown List -->
+                {% set filteredBreeds = this.breed ? this.searchBreeds(this.breed) : this.getFilteredBreeds() %}
+                {% if this.breed and filteredBreeds|length == 0 %}
+                    <div class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+                        <button
+                            type="button"
+                            @click="breed = 'custom'"
+                            class="w-full px-4 py-3 text-left hover:bg-gray-100 text-gray-700 font-medium"
+                        >
+                            Can't find it? Save as: "{{ this.breed }}"
+                        </button>
+                    </div>
+                {% elseif filteredBreeds|length > 0 %}
+                    <div id="breedListbox" role="listbox" class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-10 max-h-64 overflow-y-auto">
+                        {% for breed in filteredBreeds %}
+                        <button
+                            type="button"
+                            @click="breed = '{{ breed.name }}'"
+                            role="option"
+                            class="w-full px-4 py-2 text-left hover:bg-blue-50 focus:bg-blue-100 focus:outline-none transition-colors {% if this.breed == breed.name %}bg-blue-100 text-blue-600{% else %}text-gray-700{% endif %}"
+                        >
+                            {{ breed.name }}
+                        </button>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
 
-            <!-- Breed Options -->
+            <!-- Breed Options - Only visible when no matching breed found -->
+            {% if this.breed and filteredBreeds|length == 0 %}
             <div class="mt-3 space-y-3">
-                <p class="text-xs font-medium text-gray-600">Choose One</p>
+                <p class="text-xs font-medium text-gray-600">No exact match? Choose one:</p>
                 <div class="flex items-center gap-3">
                     <input
                         type="radio"
                         id="breedOption1"
                         name="breedOption"
-                        value="i-dont-know"
+                        value="Unknown"
                         data-model="breedOption"
                         {% if this.breedOption == 'i-dont-know' %}checked{% endif %}
                         class="w-4 h-4"
@@ -94,15 +137,29 @@
                         type="radio"
                         id="breedOption2"
                         name="breedOption"
-                        value="mix"
+                        value="Mix"
                         data-model="breedOption"
                         {% if this.breedOption == 'mix' %}checked{% endif %}
                         class="w-4 h-4"
                     >
                     <label for="breedOption2" class="text-sm text-gray-700">It's a mix</label>
                 </div>
+                <div class="flex items-center gap-3">
+                    <input
+                        type="radio"
+                        id="breedOption3"
+                        name="breedOption"
+                        value="Other"
+                        data-model="breedOption"
+                        {% if this.breedOption == 'mix' %}checked{% endif %}
+                        class="w-4 h-4"
+                    >
+                    <label for="breedOption3" class="text-sm text-gray-700">It's another breed</label>
+                </div>
             </div>
+            {% endif %}
         </div>
+        {% endif %}
 
         <!-- Gender Field -->
         <div class="mb-8">

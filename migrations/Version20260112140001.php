@@ -40,6 +40,9 @@ final class Version20260112140001 extends AbstractMigration
             ['Norwegian Forest Cat', false],
             ['Persian', false],
             ['Ragdoll', false],
+            ['Other', false],
+            ['Unknown', false],
+            ['Mixed', false],
         ];
 
         foreach ($catBreeds as $breed) {

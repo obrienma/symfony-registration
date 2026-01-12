@@ -18,7 +18,7 @@ class Breed
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     private ?Uuid $uuid = null;
 
-    #[ORM\Column(name: 'pet_type', enumType: PetTypeEnum::class, nullable: false)]
+    #[ORM\Column(name: 'type', enumType: PetTypeEnum::class, nullable: false)]
     private PetTypeEnum $petType;
 
     #[ORM\Column(length: 255, nullable: false)]

@@ -40,6 +40,9 @@ final class Version20260112140000 extends AbstractMigration
             ['Rottweiler', true],
             ['Shih Tzu', false],
             ['Yorkshire Terrier', false],
+            ['Other', false],
+            ['Unknown', false],
+            ['Mixed', false],
         ];
 
         foreach ($dogBreeds as $breed) {
