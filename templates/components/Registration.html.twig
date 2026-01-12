@@ -1,0 +1,144 @@
+<div{{ attributes }} class="max-w-md mx-auto p-6 bg-white rounded-lg shadow-sm">
+    <!-- Pet paw icons header -->
+    <div class="flex gap-2 mb-6 justify-center">
+        <span class="text-lg">🐾</span>
+        <span class="text-lg">🐾</span>
+        <span class="text-lg opacity-40">🐾</span>
+        <span class="text-lg opacity-40">🐾</span>
+        <span class="text-lg opacity-40">🐾</span>
+        <span class="text-lg opacity-40">🐾</span>
+        <span class="text-lg opacity-40">🐾</span>
+    </div>
+
+    <h1 class="text-2xl font-semibold text-blue-600 mb-6 text-center">Tell us about your pet</h1>
+
+    <form data-action="live#action" data-action-param="submit">
+        <!-- Pet Name Field -->
+        <div class="mb-6">
+            <label for="petName" class="block text-sm font-medium text-gray-700 mb-2">
+                What is your pet's name?
+            </label>
+            <input
+                type="text"
+                id="petName"
+                data-model="petName"
+                placeholder="Monte"
+                value="{{ this.petName }}"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+        </div>
+
+        <!-- Pet Type Field -->
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-3">
+                Pet Type
+            </label>
+            <div class="flex gap-3">
+                <button
+                    type="button"
+                    data-model="petType"
+                    data-model-value="cat"
+                    @click="petType = 'cat'"
+                    class="flex-1 py-2 px-4 rounded-lg font-medium transition-all {% if this.petType == 'cat' %}bg-blue-100 text-blue-600 border-2 border-blue-500{% else %}bg-gray-100 text-gray-600 border-2 border-gray-200{% endif %}"
+                >
+                    Cat
+                </button>
+                <button
+                    type="button"
+                    data-model="petType"
+                    data-model-value="dog"
+                    @click="petType = 'dog'"
+                    class="flex-1 py-2 px-4 rounded-lg font-medium transition-all {% if this.petType == 'dog' %}bg-blue-100 text-blue-600 border-2 border-blue-500{% else %}bg-gray-100 text-gray-600 border-2 border-gray-200{% endif %}"
+                >
+                    Dog
+                </button>
+            </div>
+        </div>
+
+        <!-- Breed Field -->
+        <div class="mb-6">
+            <label for="breed" class="block text-sm font-medium text-gray-700 mb-2">
+                What breed are they?
+            </label>
+            <div class="relative">
+                <input
+                    type="text"
+                    id="breed"
+                    data-model="breed"
+                    placeholder="Can't find it?"
+                    value="{{ this.breed }}"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                    🔍
+                </span>
+            </div>
+
+            <!-- Breed Options -->
+            <div class="mt-3 space-y-3">
+                <p class="text-xs font-medium text-gray-600">Choose One</p>
+                <div class="flex items-center gap-3">
+                    <input
+                        type="radio"
+                        id="breedOption1"
+                        name="breedOption"
+                        value="i-dont-know"
+                        data-model="breedOption"
+                        {% if this.breedOption == 'i-dont-know' %}checked{% endif %}
+                        class="w-4 h-4"
+                    >
+                    <label for="breedOption1" class="text-sm text-gray-700">I don't know</label>
+                </div>
+                <div class="flex items-center gap-3">
+                    <input
+                        type="radio"
+                        id="breedOption2"
+                        name="breedOption"
+                        value="mix"
+                        data-model="breedOption"
+                        {% if this.breedOption == 'mix' %}checked{% endif %}
+                        class="w-4 h-4"
+                    >
+                    <label for="breedOption2" class="text-sm text-gray-700">It's a mix</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gender Field -->
+        <div class="mb-8">
+            <label class="block text-sm font-medium text-gray-700 mb-3">
+                What gender are they?
+            </label>
+            <div class="flex gap-3">
+                <button
+                    type="button"
+                    data-model="gender"
+                    data-model-value="female"
+                    @click="gender = 'female'"
+                    class="flex-1 py-2 px-4 rounded-lg font-medium transition-all {% if this.gender == 'female' %}bg-blue-100 text-blue-600 border-2 border-blue-500{% else %}bg-gray-100 text-gray-600 border-2 border-gray-200{% endif %}"
+                >
+                    Female
+                </button>
+                <button
+                    type="button"
+                    data-model="gender"
+                    data-model-value="male"
+                    @click="gender = 'male'"
+                    class="flex-1 py-2 px-4 rounded-lg font-medium transition-all {% if this.gender == 'male' %}bg-blue-100 text-blue-600 border-2 border-blue-500{% else %}bg-gray-100 text-gray-600 border-2 border-gray-200{% endif %}"
+                >
+                    Male
+                </button>
+            </div>
+        </div>
+
+        <!-- Continue Button -->
+        <button
+            type="button"
+            data-action="live#action"
+            data-action-param="submit"
+            class="w-full py-3 bg-gray-300 text-gray-600 font-semibold rounded-lg hover:bg-gray-400 transition-colors"
+        >
+            Continue
+        </button>
+    </form>
+</div>
