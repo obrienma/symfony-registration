@@ -22,3 +22,5 @@
 ### my dev stuff ###
 /.vscode/
 .phpunit.result.cache
+/node_modules/
+package-lock.json
