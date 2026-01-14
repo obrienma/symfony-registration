@@ -7,17 +7,15 @@ use App\Enum\PetTypeEnum;
 use App\Repository\PetRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: PetRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class Pet
 {
     #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true, nullable: false)]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
-    private Uuid $uuid;
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
     #[ORM\Column(length: 255, nullable: false)]
     private string $name;
@@ -26,7 +24,7 @@ class Pet
     private PetTypeEnum $petType;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false, referencedColumnName: 'uuid')]
+    #[ORM\JoinColumn(nullable: false, referencedColumnName: 'id')]
     private Breed $breed;
 
     #[ORM\Column(name: 'gender', enumType: GenderEnum::class, nullable: false)]
@@ -64,17 +62,9 @@ class Pet
     }
 
 
-    public function getUuid(): Uuid
+    public function getId(): ?int
     {
-        return $this->uuid;
-    }
-
-    // todo: remove?
-    public function setUuid(Uuid $uuid): static
-    {
-        $this->uuid = $uuid;
-
-        return $this;
+        return $this->id;
     }
 
     public function getName(): string

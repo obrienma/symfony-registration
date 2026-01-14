@@ -51,6 +51,35 @@ final class Registration
     }
 
     /**
+     * Get breeds ordered by fallback status (fallback breeds first)
+     */
+    public function getBreedsOrderedByFallback(): array
+    {
+        if (!$this->petType) {
+            return [];
+        }
+
+        $petTypeEnum = PetTypeEnum::from($this->petType);
+        return $this->breedRepository->findByPetTypeWithFallbackFirst($petTypeEnum);
+    }
+
+    /**
+     * Get the selected breed entity
+     */
+    public function getSelectedBreed(): ?object
+    {
+        if (!$this->breed || !$this->petType) {
+            return null;
+        }
+
+        $petTypeEnum = PetTypeEnum::from($this->petType);
+        return $this->breedRepository->findOneBy([
+            'name' => $this->breed,
+            'petType' => $petTypeEnum,
+        ]);
+    }
+
+    /**
      * Get breeds matching search query
      */
     public function searchBreeds(string $query): array
@@ -74,7 +103,7 @@ final class Registration
 
         $petTypeEnum = PetTypeEnum::from($this->petType);
         $specialNames = ['Other', 'Unknown', 'Mix'];
-        
+
         return $this->breedRepository->createQueryBuilder('b')
             ->where('b.name IN (:names)')
             ->andWhere('b.petType = :petType')

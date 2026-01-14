@@ -6,17 +6,15 @@ use App\Enum\PetTypeEnum;
 use App\Repository\BreedRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: BreedRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class Breed
 {
     #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true, nullable: false)]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
-    private ?Uuid $uuid = null;
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
     #[ORM\Column(name: 'type', enumType: PetTypeEnum::class, nullable: false)]
     private PetTypeEnum $petType;
@@ -27,14 +25,18 @@ class Breed
     #[ORM\Column(name: 'is_dangerous', nullable: false, options: ['default' => false])]
     private bool $isDangerous = false;
 
+    #[ORM\Column(name: 'is_fallback', nullable: false, options: ['default' => false])]
+    private bool $isFallback = false;
+
     #[ORM\Column(name: 'date_created', type: Types::DATETIMETZ_IMMUTABLE, nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
     private \DateTimeImmutable $dateCreated;
 
-    public function __construct(PetTypeEnum $petType, string $name, bool $isDangerous = false)
+    public function __construct(PetTypeEnum $petType, string $name, bool $isDangerous = false, bool $isFallback = false)
     {
         $this->petType = $petType;
         $this->name = $name;
         $this->isDangerous = $isDangerous;
+        $this->isFallback = $isFallback;
         $this->dateCreated = new \DateTimeImmutable();
     }
 
@@ -51,16 +53,9 @@ class Breed
         return $this->name;
     }
 
-    public function getUUID(): ?Uuid
+    public function getId(): ?int
     {
-        return $this->uuid;
-    }
-
-    public function setUUID(Uuid $uuid): static
-    {
-        $this->uuid = $uuid;
-
-        return $this;
+        return $this->id;
     }
 
     public function getPetType(): PetTypeEnum
@@ -87,7 +82,7 @@ class Breed
         return $this;
     }
 
-    public function isDangerous(): bool
+    public function getIsDangerous(): bool
     {
         return $this->isDangerous;
     }
@@ -95,6 +90,17 @@ class Breed
     public function setIsDangerous(bool $isDangerous): static
     {
         $this->isDangerous = $isDangerous;
+
+        return $this;
+    }
+    public function getIsFallback(): bool
+    {
+        return $this->isFallback;
+    }
+
+    public function setIsFallback(bool $isFallback): static
+    {
+        $this->isFallback = $isFallback;
 
         return $this;
     }

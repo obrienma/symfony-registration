@@ -66,101 +66,36 @@
         <!-- Breed Field - Only visible when petType is selected -->
         {% if this.petType %}
         <div class="mb-6">
-            <label for="breedCombobox" class="block text-sm font-medium text-gray-700 mb-2">
+            <label for="breedSelect" class="block text-sm font-medium text-gray-700 mb-2">
                 What breed are they?
             </label>
 
-            <!-- Combobox Container -->
-            <div class="relative">
-                <input
-                    type="text"
-                    id="breedCombobox"
-                    role="combobox"
-                    aria-autocomplete="list"
-                    aria-controls="breedListbox"
-                    data-model="breed"
-                    placeholder="Search breeds..."
-                    value="{{ this.breed }}"
-                    @input.debounce-300="$refresh"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                    🔍
-                </span>
+            <select
+                id="breedSelect"
+                data-model="breed"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+                <option value="">Select a breed...</option>
+                {% for breedEntity in this.getBreedsOrderedByFallback() %}
+                    <option value="{{ breedEntity.name }}" {% if this.breed == breedEntity.name %}selected{% endif %}>
+                        {{ breedEntity.name }}{% if breedEntity.isFallback %} (fallback){% endif %}
+                    </option>
+                {% endfor %}
+            </select>
 
-                <!-- Dropdown List -->
-                {% set filteredBreeds = this.breed ? this.searchBreeds(this.breed) : this.getFilteredBreeds() %}
-                {% if this.breed and filteredBreeds|length == 0 %}
-                    <div class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
-                        <button
-                            type="button"
-                            @click="breed = 'custom'"
-                            class="w-full px-4 py-3 text-left hover:bg-gray-100 text-gray-700 font-medium"
-                        >
-                            Can't find it? Save as: "{{ this.breed }}"
-                        </button>
-                    </div>
-                {% elseif filteredBreeds|length > 0 %}
-                    <div id="breedListbox" role="listbox" class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-10 max-h-64 overflow-y-auto">
-                        {% for breed in filteredBreeds %}
-                        <button
-                            type="button"
-                            @click="breed = '{{ breed.name }}'"
-                            role="option"
-                            class="w-full px-4 py-2 text-left hover:bg-blue-50 focus:bg-blue-100 focus:outline-none transition-colors {% if this.breed == breed.name %}bg-blue-100 text-blue-600{% else %}text-gray-700{% endif %}"
-                        >
-                            {{ breed.name }}
-                        </button>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
-
-            <!-- Breed Options - Only visible when no matching breed found -->
-            {% if this.breed and filteredBreeds|length == 0 %}
-            <div class="mt-3 space-y-3">
-                <p class="text-xs font-medium text-gray-600">No exact match? Choose one:</p>
-                <div class="flex items-center gap-3">
-                    <input
-                        type="radio"
-                        id="breedOption1"
-                        name="breedOption"
-                        value="Unknown"
-                        data-model="breedOption"
-                        {% if this.breedOption == 'i-dont-know' %}checked{% endif %}
-                        class="w-4 h-4"
-                    >
-                    <label for="breedOption1" class="text-sm text-gray-700">I don't know</label>
-                </div>
-                <div class="flex items-center gap-3">
-                    <input
-                        type="radio"
-                        id="breedOption2"
-                        name="breedOption"
-                        value="Mix"
-                        data-model="breedOption"
-                        {% if this.breedOption == 'mix' %}checked{% endif %}
-                        class="w-4 h-4"
-                    >
-                    <label for="breedOption2" class="text-sm text-gray-700">It's a mix</label>
-                </div>
-                <div class="flex items-center gap-3">
-                    <input
-                        type="radio"
-                        id="breedOption3"
-                        name="breedOption"
-                        value="Other"
-                        data-model="breedOption"
-                        {% if this.breedOption == 'mix' %}checked{% endif %}
-                        class="w-4 h-4"
-                    >
-                    <label for="breedOption3" class="text-sm text-gray-700">It's another breed</label>
-                </div>
+            {% set selectedBreed = this.getSelectedBreed() %}
+            
+            
+            {% if selectedBreed and selectedBreed.getIsDangerous() %}
+            <div class="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex items-start gap-2">
+                <span class="text-yellow-600 text-lg">⚠️</span>
+                <p class="text-sm text-yellow-800">
+                    <strong>{{ selectedBreed.name }}</strong> is considered dangerous.
+                </p>
             </div>
             {% endif %}
         </div>
         {% endif %}
-
         <!-- Gender Field -->
         <div class="mb-8">
             <label class="block text-sm font-medium text-gray-700 mb-3">

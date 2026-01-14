@@ -19,6 +19,7 @@ class BreedRepository extends ServiceEntityRepository
 
     /**
      * Find breeds by name and pet type for search functionality
+     * Fallback breeds (Other, Unknown, Mix) appear first
      *
      * @return Breed[] Returns an array of Breed objects
      */
@@ -29,7 +30,25 @@ class BreedRepository extends ServiceEntityRepository
             ->andWhere('b.petType = :petType')
             ->setParameter('name', '%' . $name . '%')
             ->setParameter('petType', $petType)
-            ->orderBy('b.name', 'ASC')
+            ->orderBy('b.isFallback', 'DESC')  // Fallback breeds first
+            ->addOrderBy('b.name', 'ASC')       // Then alphabetically
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    /**
+     * Find all breeds by pet type, with fallback breeds first
+     *
+     * @return Breed[] Returns an array of Breed objects
+     */
+    public function findByPetTypeWithFallbackFirst(PetTypeEnum $petType): array
+    {
+        return $this->createQueryBuilder('b')
+            ->andWhere('b.petType = :petType')
+            ->setParameter('petType', $petType)
+            ->orderBy('b.isFallback', 'DESC')  // Fallback breeds first
+            ->addOrderBy('b.name', 'ASC')       // Then alphabetically
             ->getQuery()
             ->getResult()
         ;

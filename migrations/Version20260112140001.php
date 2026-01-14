@@ -20,38 +20,47 @@ final class Version20260112140001 extends AbstractMigration
     public function up(Schema $schema): void
     {
         $catBreeds = [
-            ['Abyssinian', false],
-            ['American Bobtail', false],
-            ['American Curl', false],
-            ['American Shorthair', false],
-            ['Balinese', false],
-            ['Bengal', false],
-            ['Birman', false],
-            ['Bombay', false],
-            ['British Shorthair', false],
-            ['Burmese', false],
-            ['Cornish Rex', false],
-            ['Devon Rex', false],
-            ['Egyptian Mau', false],
-            ['Exotic Shorthair', false],
-            ['Himalayan', false],
-            ['Japanese Bobtail', false],
-            ['Maine Coon', false],
-            ['Norwegian Forest Cat', false],
-            ['Persian', false],
-            ['Ragdoll', false],
-            ['Other', false],
-            ['Unknown', false],
-            ['Mixed', false],
+            ['Abyssinian', false, false],
+            ['American Bobtail', false, false],
+            ['American Curl', false, false],
+            ['American Shorthair', false, false],
+            ['Balinese', false, false],
+            ['Bengal', false, false],
+            ['Birman', false, false],
+            ['Bombay', false, false],
+            ['British Shorthair', false, false],
+            ['Burmese', false, false],
+            ['Cornish Rex', false, false],
+            ['Devon Rex', false, false],
+            ['Egyptian Mau', false, false],
+            ['Exotic Shorthair', false, false],
+            ['Himalayan', false, false],
+            ['Japanese Bobtail', false, false],
+            ['Maine Coon', false, false],
+            ['Norwegian Forest Cat', false, false],
+            ['Persian', false, false],
+            ['Ragdoll', false, false],
+            ['Other', false, true],      // fallback
+            ['Unknown', false, true],    // fallback
+            ['Mixed', false, true],      // fallback
         ];
 
         foreach ($catBreeds as $breed) {
             $this->addSql(
-                'INSERT INTO breed (uuid, type, name, is_dangerous, date_created) VALUES (UNHEX(REPLACE(UUID(), \'-\', \'\')), ?, ?, ?, NOW())',
+                "
+                INSERT INTO breed (
+                    type,
+                    name,
+                    is_dangerous,
+                    is_fallback,
+                    date_created
+                ) VALUES (?, ?, ?, ?, NOW())
+                ",
                 [
                     'cat',
                     $breed[0],
                     $breed[1] ? 1 : 0,
+                    $breed[2] ? 1 : 0,
                 ]
             );
         }
@@ -59,6 +68,9 @@ final class Version20260112140001 extends AbstractMigration
 
     public function down(Schema $schema): void
     {
-        $this->addSql('DELETE FROM breed WHERE type = ?', ['cat']);
+        $this->addSql(
+            'DELETE FROM breed WHERE type = ?',
+            ['cat']
+        );
     }
 }

@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Add dog breeds to the database
  */
-final class Version20260112140000 extends AbstractMigration
+final class Version20260113230520 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -40,9 +40,9 @@ final class Version20260112140000 extends AbstractMigration
             ['Rottweiler', true, false],
             ['Shih Tzu', false, false],
             ['Yorkshire Terrier', false, false],
-            ['Other', false, true],      // fallback
-            ['Unknown', false, true],    // fallback
-            ['Mixed', false, true],      // fallback
+            ['Other', false, true],
+            ['Unknown', false, true],
+            ['Mixed', false, true],
         ];
 
         foreach ($dogBreeds as $breed) {
