@@ -96,6 +96,73 @@
             {% endif %}
         </div>
         {% endif %}
+
+        <!-- Age Field -->
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-3">
+                How old are they?
+            </label>
+            
+            <!-- Age Mode Toggle -->
+            <div class="mb-3">
+                <div style="display: inline-flex; border: 1px solid #d1d5db; border-radius: 0.5rem; padding: 0.25rem; width: 100%;">
+                    <input
+                        type="radio"
+                        id="ageMode-approximate"
+                        name="ageMode"
+                        value="approximate"
+                        data-model="ageMode"
+                        {% if this.ageMode == 'approximate' %}checked{% endif %}
+                        style="display: none;"
+                        @change="$refresh"
+                    >
+                    <label for="ageMode-approximate" style="flex: 1; padding: 0.5rem 1rem; border-radius: 0.375rem; font-weight: 500; text-align: center; cursor: pointer; transition: all 0.2s; {% if this.ageMode == 'approximate' %}background-color: #2563eb; color: white;{% else %}background-color: transparent; color: #374151;{% endif %}">
+                        Approximate
+                    </label>
+                    <input
+                        type="radio"
+                        id="ageMode-exact"
+                        name="ageMode"
+                        value="exact"
+                        data-model="ageMode"
+                        {% if this.ageMode == 'exact' %}checked{% endif %}
+                        style="display: none;"
+                        @change="$refresh"
+                    >
+                    <label for="ageMode-exact" style="flex: 1; padding: 0.5rem 1rem; border-radius: 0.375rem; font-weight: 500; text-align: center; cursor: pointer; transition: all 0.2s; {% if this.ageMode == 'exact' %}background-color: #2563eb; color: white;{% else %}background-color: transparent; color: #374151;{% endif %}">
+                        Exact DOB
+                    </label>
+                </div>
+            </div>
+
+            <!-- Approximate Age Dropdown -->
+            {% if this.ageMode == 'approximate' %}
+            <select
+                id="approximateAge"
+                data-model="approximateAge"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+                <option value="">Select age...</option>
+                {% for value, label in this.getAgeOptions() %}
+                    <option value="{{ value }}" {% if this.approximateAge == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+            {% endif %}
+
+            <!-- Exact Birth Date Input -->
+            {% if this.ageMode == 'exact' %}
+            <input
+                type="date"
+                id="birthDate"
+                data-model="birthDate"
+                value="{{ this.birthDate }}"
+                max="{{ 'now'|date('Y-m-d') }}"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+            {% endif %}
+        </div>
         <!-- Gender Field -->
         <div class="mb-8">
             <label class="block text-sm font-medium text-gray-700 mb-3">

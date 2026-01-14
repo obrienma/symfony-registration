@@ -34,6 +34,15 @@ final class Registration
     #[LiveProp(writable: true)]
     public string $gender = '';
 
+    #[LiveProp(writable: true)]
+    public string $ageMode = 'approximate'; // 'exact' or 'approximate'
+
+    #[LiveProp(writable: true)]
+    public string $birthDate = ''; // For exact DOB input
+
+    #[LiveProp(writable: true)]
+    public string $approximateAge = ''; // For approximate age dropdown
+
     #[LiveProp]
     public bool $submitted = false;
 
@@ -77,6 +86,18 @@ final class Registration
             'name' => $this->breed,
             'petType' => $petTypeEnum,
         ]);
+    }
+
+    /**
+     * Get age options for the dropdown
+     */
+    public function getAgeOptions(): array
+    {
+        $options = ['0.5' => 'Under 1 year'];
+        for ($i = 1; $i <= 20; $i++) {
+            $options[(string)$i] = $i === 1 ? '1 year' : "$i years";
+        }
+        return $options;
     }
 
     /**
