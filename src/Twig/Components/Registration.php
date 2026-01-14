@@ -2,12 +2,17 @@
 
 namespace App\Twig\Components;
 
+use App\Entity\Pet;
+use App\Enum\GenderEnum;
 use App\Enum\PetTypeEnum;
 use App\Repository\BreedRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
 use Symfony\UX\LiveComponent\Attribute\LiveAction;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Routing\RouterInterface;
 
 #[AsLiveComponent]
 final class Registration
@@ -16,6 +21,8 @@ final class Registration
 
     public function __construct(
         private BreedRepository $breedRepository,
+        private EntityManagerInterface $entityManager,
+        private RouterInterface $router,
     ) {
     }
 
@@ -43,8 +50,7 @@ final class Registration
     #[LiveProp(writable: true)]
     public string $approximateAge = ''; // For approximate age dropdown
 
-    #[LiveProp]
-    public bool $submitted = false;
+    private ?Pet $savedPet = null;
 
     /**
      * Get filtered breeds based on selected petType
@@ -135,10 +141,69 @@ final class Registration
             ->getResult();
     }
 
+
     #[LiveAction]
-    public function submit(): void
+    public function submit()
     {
-        $this->submitted = true;
-        // Handle form submission here
+        // Validate all required fields
+        if (empty($this->petName) || empty($this->petType) || empty($this->breed) || empty($this->gender)) {
+            return; // Just return without doing anything - validation to be implemented
+        }
+
+        // Validate age field based on mode
+        if ($this->ageMode === 'exact' && empty($this->birthDate)) {
+            return;
+        }
+        if ($this->ageMode === 'approximate' && empty($this->approximateAge)) {
+            return;
+        }
+
+        // Get breed entity
+        $breedEntity = $this->getSelectedBreed();
+        if (!$breedEntity) {
+            return;
+        }
+
+        // Calculate birth_date based on age mode
+        $birthDate = new \DateTime();
+        $birthDateIsExact = false;
+
+        if ($this->ageMode === 'exact') {
+            $birthDate = new \DateTime($this->birthDate);
+            $birthDateIsExact = true;
+        } else {
+            // Approximate: subtract years from current date
+            $years = (float) $this->approximateAge;
+            $birthDate->modify('-' . $years . ' years');
+        }
+
+        // Create and save pet
+        $pet = new Pet(
+            $this->petName,
+            PetTypeEnum::from($this->petType),
+            $breedEntity,
+            GenderEnum::from($this->gender)
+        );
+        $pet->setBirthDate($birthDate);
+        $pet->setBirthDateIsExact($birthDateIsExact);
+
+        $this->entityManager->persist($pet);
+        $this->entityManager->flush();
+
+        // Redirect to confirmation page instead of trying to update state
+        $url = $this->router->generate('app_confirmation', ['id' => $pet->getId()]);
+        return new RedirectResponse($url);
+    }
+
+    #[LiveAction]
+    public function reset(): void
+    {
+        $this->petName = '';
+        $this->petType = '';
+        $this->breed = '';
+        $this->gender = '';
+        $this->ageMode = 'approximate';
+        $this->birthDate = '';
+        $this->approximateAge = '';
     }
 }
