@@ -1,4 +1,4 @@
-# Pet Registration Application
+# Pet Registration Demo
 
 A modern pet registration system built with Symfony 7.3, featuring a dynamic LiveComponent form with real-time validation, breed filtering, and a Tailwind CSS interface.
 
