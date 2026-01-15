@@ -52,10 +52,29 @@ tests/
 
 ### Installation
 
+#### Quick Install (Recommended)
+
+Clone the repository and run the automated installation script:
+
+```bash
+git clone git@github.com:obrienma/symfony-registration.git
+cd symfony-registration
+./install.sh
+```
+
+This will:
+- Start Docker containers
+- Install PHP and Node.js dependencies
+- Set up the database
+- Run migrations
+- Load breed fixtures
+
+#### Manual Installation
+
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd symfony-regitration
+   git clone git@github.com:obrienma/symfony-registration.git
+   cd symfony-registration
    ```
 
 2. **Start Docker containers**
@@ -68,10 +87,9 @@ tests/
    docker compose exec php composer install
    ```
 
-4. **Install Node.js dependencies and build assets**
+4. **Install Node.js dependencies (for Tailwind CSS)**
    ```bash
-   docker compose exec node npm install
-   docker compose exec node npm run build
+   docker compose run --rm node npm install
    ```
 
 5. **Set up the database**
@@ -79,11 +97,8 @@ tests/
    # Create database
    docker compose exec php bin/console doctrine:database:create
 
-   # Run migrations
+   # Run migrations (includes breed data)
    docker compose exec php bin/console doctrine:migrations:migrate --no-interaction
-
-   # Load breed fixtures (optional)
-   docker compose exec php bin/console doctrine:fixtures:load --no-interaction
    ```
 
 6. **Access the application**
@@ -109,9 +124,11 @@ docker compose exec php bin/phpunit tests/Controller
 
 ### Watching Assets (Development)
 
+Symfony AssetMapper handles asset compilation automatically. For Tailwind CSS development:
+
 ```bash
-# Watch for changes and rebuild automatically
-docker compose exec node npm run watch
+# Watch Tailwind changes and rebuild
+docker compose up node
 ```
 
 ### Database Commands
