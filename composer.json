@@ -38,6 +38,7 @@
         "symfony/translation": "7.3.*",
         "symfony/twig-bundle": "7.3.*",
         "symfony/uid": "7.3.*",
+        "symfony/ux-icons": "^2.32",
         "symfony/ux-live-component": "^2.32",
         "symfony/ux-twig-component": "^2.32",
         "symfony/validator": "7.3.*",
