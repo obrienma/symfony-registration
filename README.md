@@ -67,7 +67,8 @@ This will:
 - Install PHP and Node.js dependencies
 - Set up the database
 - Run migrations
-- Load breed fixtures
+
+Open your browser and navigate to: http://localhost:8080
 
 #### Manual Installation
 
