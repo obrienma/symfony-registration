@@ -48,6 +48,8 @@ echo -e "${BLUE}📦 Installing Node.js dependencies...${NC}"
 docker compose run --rm node npm install
 
 echo -e "${BLUE}🎨 Building Tailwind CSS...${NC}"
+# Remove any existing build first
+rm -f var/tailwind/app.built.css
 docker compose exec -T php bin/console tailwind:build --no-interaction
 
 echo -e "${BLUE}🗄️  Setting up database...${NC}"
