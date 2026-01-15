@@ -1,3 +1,13 @@
+{% macro errorClass(errors, field) %}
+    {% if errors[field] is defined %}border-red-500{% else %}border-gray-300{% endif %}
+{% endmacro %}
+
+{% macro errorMessage(errors, field) %}
+    {% if errors[field] is defined %}
+        <p class="mt-1 text-sm text-red-600">{{ errors[field] }}</p>
+    {% endif %}
+{% endmacro %}
+
 <div{{ attributes }} class="max-w-md mx-auto p-4 sm:p-6 bg-white sm:rounded-lg sm:shadow-sm">
     <!-- Pet paw icons header -->
     <div class="flex justify-between mb-6 items-center">
@@ -12,6 +22,12 @@
 
     <h1 class="text-xl sm:text-2xl font-semibold text-blue-700 mb-6">Tell us about your pet</h1>
 
+    {% if errors is not empty %}
+    <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+        <p class="text-sm text-red-800 font-medium">Please fix the following errors:</p>
+    </div>
+    {% endif %}
+
     <div>
         <!-- Pet Name Field -->
         <div class="mb-5">
@@ -24,8 +40,9 @@
                 data-model="petName"
                 placeholder="Monte"
                 value="{{ this.petName }}"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border {{ _self.errorClass(errors, 'petName') }} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
+            {{ _self.errorMessage(errors, 'petName') }}
         </div>
 
         <!-- Pet Type Field - Segmented Control -->
@@ -33,7 +50,7 @@
             <label class="block text-sm font-medium text-gray-700 mb-2">
                 Pet Type
             </label>
-            <div style="display: inline-flex; border: 1px solid #d1d5db; border-radius: 0.5rem; padding: 0.25rem; width: 100%;">
+            <div style="display: inline-flex; border: 1px solid {% if errors.petType is defined %}#ef4444{% else %}#d1d5db{% endif %}; border-radius: 0.5rem; padding: 0.25rem; width: 100%;">
                 <input
                     type="radio"
                     id="petType-cat"
@@ -61,6 +78,7 @@
                     Dog
                 </label>
             </div>
+            {{ _self.errorMessage(errors, 'petType') }}
         </div>
 
         <!-- Breed Field - Only visible when petType is selected -->
@@ -74,7 +92,7 @@
                 id="breedSelect"
                 data-model="breed"
                 data-action="change->live#update"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border {{ _self.errorClass(errors, 'breed') }} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
                 <option value="">Select a breed...</option>
                 {% for breedEntity in this.getBreedsOrderedByFallback() %}
@@ -83,6 +101,7 @@
                     </option>
                 {% endfor %}
             </select>
+            {{ _self.errorMessage(errors, 'breed') }}
         </div>
         {% endif %}
 
@@ -140,7 +159,7 @@
             <select
                 id="approximateAge"
                 data-model="approximateAge"
-                class="w-full px-4 py-2 border {% if this.validationErrors.approximateAge is defined %}border-red-500{% else %}border-gray-300{% endif %} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border {{ _self.errorClass(errors, 'approximateAge') }} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
                 <option value="">Select age...</option>
                 {% for value, label in this.getAgeOptions() %}
@@ -149,9 +168,7 @@
                     </option>
                 {% endfor %}
             </select>
-            {% if this.validationErrors.approximateAge is defined %}
-            <p class="mt-1 text-sm text-red-600">{{ this.validationErrors.approximateAge }}</p>
-            {% endif %}
+            {{ _self.errorMessage(errors, 'approximateAge') }}
             {% endif %}
 
             <!-- Exact Birth Date Input -->
@@ -162,8 +179,9 @@
                 data-model="birthDate"
                 value="{{ this.birthDate }}"
                 max="{{ 'now'|date('Y-m-d') }}"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-2 border {{ _self.errorClass(errors, 'birthDate') }} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
+            {{ _self.errorMessage(errors, 'birthDate') }}
             {% endif %}
         </div>
 
@@ -172,7 +190,7 @@
             <label class="block text-sm font-medium text-gray-700 mb-2">
                 What gender are they?
             </label>
-            <div style="display: inline-flex; border: 1px solid #d1d5db; border-radius: 0.5rem; padding: 0.25rem; width: 100%;">
+            <div style="display: inline-flex; border: 1px solid {% if errors.gender is defined %}#ef4444{% else %}#d1d5db{% endif %}; border-radius: 0.5rem; padding: 0.25rem; width: 100%;">
                 <input
                     type="radio"
                     id="gender-female"
@@ -200,6 +218,7 @@
                     Male
                 </label>
             </div>
+            {{ _self.errorMessage(errors, 'gender') }}
         </div>
 
         <!-- Continue Button -->

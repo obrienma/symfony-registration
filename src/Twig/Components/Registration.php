@@ -50,6 +50,9 @@ final class Registration
     #[LiveProp(writable: true)]
     public string $approximateAge = ''; // For approximate age dropdown
 
+    #[LiveProp]
+    public array $errors = [];
+
     private ?Pet $savedPet = null;
 
     /**
@@ -145,22 +148,43 @@ final class Registration
     #[LiveAction]
     public function submit()
     {
+        // Clear previous errors
+        $this->errors = [];
+
         // Validate all required fields
-        if (empty($this->petName) || empty($this->petType) || empty($this->breed) || empty($this->gender)) {
-            return; // Just return without doing anything - validation to be implemented
+        if (empty($this->petName)) {
+            $this->errors['petName'] = 'Pet name is required';
+        }
+
+        if (empty($this->petType)) {
+            $this->errors['petType'] = 'Pet type is required';
+        }
+
+        if (empty($this->breed)) {
+            $this->errors['breed'] = 'Breed is required';
+        }
+
+        if (empty($this->gender)) {
+            $this->errors['gender'] = 'Gender is required';
         }
 
         // Validate age field based on mode
         if ($this->ageMode === 'exact' && empty($this->birthDate)) {
-            return;
+            $this->errors['birthDate'] = 'Birth date is required';
         }
         if ($this->ageMode === 'approximate' && empty($this->approximateAge)) {
+            $this->errors['approximateAge'] = 'Age is required';
+        }
+
+        // If there are errors, stop here
+        if (!empty($this->errors)) {
             return;
         }
 
         // Get breed entity
         $breedEntity = $this->getSelectedBreed();
         if (!$breedEntity) {
+            $this->errors['breed'] = 'Invalid breed selected';
             return;
         }
 
